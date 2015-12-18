@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:weightSum="2">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal"
+            android:weightSum="2"
+            android:layout_weight="1">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/quadrant1"
+                android:id="@+id/button"
+                android:layout_weight="1"
+                android:background="@color/green"
+                android:textSize="@dimen/abc_text_size_large_material"
+                android:padding="10dp" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/quadrant2"
+                android:id="@+id/button2"
+                android:layout_weight="1"
+                android:background="@color/blue"
+                android:textSize="@dimen/abc_text_size_large_material"
+                android:padding="10dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal"
+            android:weightSum="2"
+            android:layout_weight="1">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/quadrant3"
+                android:id="@+id/button3"
+                android:layout_weight="1"
+                android:background="@color/yellow"
+                android:textSize="@dimen/abc_text_size_large_material"
+                android:padding="10dp" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/quadrant4"
+                android:id="@+id/button4"
+                android:layout_weight="1"
+                android:background="@color/red"
+                android:textSize="@dimen/abc_text_size_large_material"
+                android:padding="10dp" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Seven Habits</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_add">Add Chart</string>
+    <string name="action_add_task">Add Task</string>
+
+    <string name="title_section1">First</string>
+    <string name="title_section2">Second</string>
+    <string name="title_section3">Third</string>
+
+    <string name="navigation_drawer_open">Navigation drawer open</string>
+    <string name="navigation_drawer_close">Navigation drawer closed</string>
+
+    <string name="title">Enter chart name</string>
+    <string name="task">Enter task details</string>
+
+    <string name="quadrant1">Important and Urgent</string>
+    <string name="quadrant2">Important and Not Urgent</string>
+    <string name="quadrant3">Not Important and Urgent</string>
+    <string name="quadrant4">Not Important and Not Urgent</string>
+</resources>
