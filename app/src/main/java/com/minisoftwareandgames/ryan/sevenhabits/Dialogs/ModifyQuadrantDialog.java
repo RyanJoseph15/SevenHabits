@@ -14,6 +14,7 @@ import android.widget.EditText;
 import com.minisoftwareandgames.ryan.sevenhabits.Fragments.QuadrantFragment;
 import com.minisoftwareandgames.ryan.sevenhabits.MainActivity;
 import com.minisoftwareandgames.ryan.sevenhabits.R;
+import com.minisoftwareandgames.ryan.sevenhabits.SQLiteHelper;
 import com.minisoftwareandgames.ryan.sevenhabits.Utilities;
 
 /**
@@ -45,9 +46,11 @@ public class ModifyQuadrantDialog extends DialogFragment {
         final View view = inflater.inflate(R.layout.dialog_new_task_info, null);
 
         final EditText mTitle = (EditText) view.findViewById(R.id.task_entered);
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
-                Utilities.SEVENHABITS, Context.MODE_PRIVATE);
-        mTitle.setText(Utilities.getElement(sharedPreferences, position, fragment.getmTag()));
+//        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
+//                Utilities.SEVENHABITS, Context.MODE_PRIVATE);
+//        mTitle.setText(Utilities.getElement(sharedPreferences, position, fragment.getmTag()));
+        SQLiteHelper helper = new SQLiteHelper(getActivity());
+        mTitle.setText(helper.getDetails(fragment.getParentTitle(), Utilities.q2Q(fragment.getQuadrant())).get(position).getDetails());
         builder.setView(view)
                 .setNeutralButton("delete",
                         new DialogInterface.OnClickListener() {

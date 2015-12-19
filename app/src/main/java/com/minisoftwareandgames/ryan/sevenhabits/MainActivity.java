@@ -69,11 +69,12 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
+        // TODO: clean up back stack when fragment is selected
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         SharedPreferences sharedPreferences = getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE);
         Log.d("CHECK", "position: " + position);
         if (position < 0) {
-
+            // TODO: welcome and tutorial page
         } else {
             QuadrantChartFragment quadrantChartFragment;
             if (fragmentManager.findFragmentByTag(QUADRANTCHARTTAG) == null) {
@@ -85,8 +86,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             fragmentManager.beginTransaction()
                 .replace(R.id.container, quadrantChartFragment, QUADRANTCHARTTAG)
                 .commit();
-//            Log.d("CHECK", "QuadrantChartFragment title: " + quadrantChartFragment.getTitle());
-//            updateTitle(quadrantChartFragment.getTitle());
         }
 
     }

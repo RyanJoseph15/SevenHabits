@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.minisoftwareandgames.ryan.sevenhabits.Objects.QuadrantDetail;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +24,10 @@ public class Utilities extends Application {
     public static final String TITLES = "Titles";
     public static final String TASKS = "Tasks";
     public static final String SEVENHABITS = "SevenHabits";
+
+    public enum QUADRANT {
+        ONE, TWO, THREE, FOUR, ALL
+    }
 
     /* ------------------------------------------------------------------------------------ /
      *                                  Title Parsing
@@ -111,6 +117,24 @@ public class Utilities extends Application {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public static ArrayList<String> QuadrantDetails2StringsArray(ArrayList<QuadrantDetail> quadrantDetails) {
+        ArrayList<String> details = new ArrayList<String>();
+        if (quadrantDetails != null)
+            for (QuadrantDetail detail : quadrantDetails) {
+                details.add(detail.getDetails());
+            }
+        return details;
+    }
+
+    public static QUADRANT q2Q(int quad) {
+        /* int -> Utilities.QUADRANT */
+        if (quad == 1) return QUADRANT.ONE;
+        else if (quad == 2) return QUADRANT.TWO;
+        else if (quad == 3) return QUADRANT.THREE;
+        else if (quad == 4) return QUADRANT.FOUR;
+        else return QUADRANT.ALL;
     }
 
 }

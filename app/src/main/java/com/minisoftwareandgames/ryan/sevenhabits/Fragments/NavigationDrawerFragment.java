@@ -22,12 +22,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.ModifyQuadrantDialog;
 import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.ModifyTitleDialog;
 import com.minisoftwareandgames.ryan.sevenhabits.MainActivity;
 import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.NewChartInfoDialog;
 import com.minisoftwareandgames.ryan.sevenhabits.R;
+import com.minisoftwareandgames.ryan.sevenhabits.SQLiteHelper;
 import com.minisoftwareandgames.ryan.sevenhabits.Utilities;
 
 import java.util.ArrayList;
@@ -346,8 +348,12 @@ public class NavigationDrawerFragment extends Fragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE);
         ArrayList<String> elements = Utilities.getElements(sharedPreferences, Utilities.TITLES);
         sharedPreferences.edit().remove(Utilities.TITLES).apply();
-        elements.remove(elements.get(position));
+        String title = elements.get(position);
+        elements.remove(title);
         Utilities.addElements(sharedPreferences, elements, Utilities.TITLES);
+        // delete quadrant entries from the database
+        SQLiteHelper helper = new SQLiteHelper(getActivity());
+        helper.removeTitle(title);
         // notify data set changed
         if (mAdapter.getCount() > 0) mAdapter.clear();
         mAdapter.addAll(elements);
@@ -356,6 +362,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     public void ModifyQuadrantDialogEditCallback(int position, String newElement) {
         // TODO: update current fragment after completing this task
+
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE);
         String oldElement = Utilities.getElement(sharedPreferences, position, Utilities.TITLES);
         if (!oldElement.equals(newElement)) {
@@ -369,14 +376,11 @@ public class NavigationDrawerFragment extends Fragment {
             if (mAdapter.getCount() > 0) mAdapter.clear();
             mAdapter.addAll(elements);
             mAdapter.notifyDataSetChanged();
-            // we need to update the names of all the quadrants for this title
-            for (int i = 1; i <= 4; i++) {
-                String oldTag = Utilities.TASKS + "_" + oldElement + "_" + i;
-                String newTag = Utilities.TASKS + "_" + newElement + "_" + i;
-                elements = Utilities.getElements(sharedPreferences, oldTag);
-                sharedPreferences.edit().remove(oldTag).apply();                    // clean it up
-                Utilities.addElements(sharedPreferences, elements, newTag);         // in with the new
-            }
+            // we need to update our database for each quadrant to match the new title
+            SQLiteHelper helper = new SQLiteHelper(getActivity());
+            boolean unique = helper.updateTitle(oldElement, newElement);
+            String notUnique = newElement + " " + getString(R.string.not_unique);
+            if (!unique) Toast.makeText(getActivity(), notUnique, Toast.LENGTH_SHORT).show();
         } // don't need to do anything otherwise
     }
 

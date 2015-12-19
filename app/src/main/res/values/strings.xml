@@ -19,4 +19,6 @@
     <string name="quadrant2">Important and Not Urgent</string>
     <string name="quadrant3">Not Important and Urgent</string>
     <string name="quadrant4">Not Important and Not Urgent</string>
+
+    <string name="not_unique">already exists.</string>
 </resources>

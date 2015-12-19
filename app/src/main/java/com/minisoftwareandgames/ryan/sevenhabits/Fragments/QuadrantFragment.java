@@ -18,7 +18,9 @@ import android.widget.ListView;
 import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.ModifyQuadrantDialog;
 import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.NewTaskDialog;
 import com.minisoftwareandgames.ryan.sevenhabits.MainActivity;
+import com.minisoftwareandgames.ryan.sevenhabits.Objects.QuadrantDetail;
 import com.minisoftwareandgames.ryan.sevenhabits.R;
+import com.minisoftwareandgames.ryan.sevenhabits.SQLiteHelper;
 import com.minisoftwareandgames.ryan.sevenhabits.Utilities;
 
 import java.util.ArrayList;
@@ -45,22 +47,14 @@ public class QuadrantFragment extends Fragment {
     public void setQuadrant(int quadrant) {
         this.quadrant = quadrant;
     }
+    public int getQuadrant() {return this.quadrant;}
     public void setDetails(String details) {
         this.details = details;
     }
     public void setParentTitle(String parentTitle) {
         this.parentTitle = parentTitle;
     }
-
-    public void NewTaskDialogCallback(String details) {
-        setDetails(details);
-        // add to the list of titles
-        Utilities.addElement(getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE), details, tag);
-        // update the view
-        if (mAdapter.getCount() > 0) mAdapter.clear();
-        mAdapter.addAll(Utilities.getElements(getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE), tag));
-        mAdapter.notifyDataSetChanged();
-    }
+    public String getParentTitle() {return this.parentTitle;}
 
     public String getmTag() {return this.tag;}
 
@@ -106,7 +100,10 @@ public class QuadrantFragment extends Fragment {
             }
         });
         tag = Utilities.TASKS + "_" + parentTitle + "_" + quadrant;
-        ArrayList<String> tasks = Utilities.getElements(getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE), tag);
+        //ArrayList<String> tasks = Utilities.getElements(getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE), tag);
+        SQLiteHelper helper = new SQLiteHelper(getActivity());
+        ArrayList<QuadrantDetail> details = helper.getDetails(parentTitle, Utilities.q2Q(quadrant));
+        ArrayList<String> tasks = Utilities.QuadrantDetails2StringsArray(details);
         if (tasks == null) {
             tasks = new ArrayList<String>();
         }
@@ -156,34 +153,62 @@ public class QuadrantFragment extends Fragment {
      *                                   Callback methods
      * ----------------------------------------------------------------------------------- */
 
+    public void NewTaskDialogCallback(String details) {
+        setDetails(details);
+        // add to the list of titles
+//        Utilities.addElement(getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE), details, tag);
+        SQLiteHelper helper = new SQLiteHelper(getActivity());
+        helper.addEntry(parentTitle, quadrant, details);
+        // update the view
+        if (mAdapter.getCount() > 0) mAdapter.clear();
+//        mAdapter.addAll(Utilities.getElements(getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE), tag));
+        mAdapter.addAll(Utilities.QuadrantDetails2StringsArray(helper.getDetails(parentTitle, Utilities.q2Q(quadrant))));
+        mAdapter.notifyDataSetChanged();
+    }
+
     public void ModifyQuadrantDialogDeleteCallback(int position) {
         // remove JSON sharedpreferences
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE);
-        ArrayList<String> elements = Utilities.getElements(sharedPreferences, tag);
-        sharedPreferences.edit().remove(tag).apply();
-        elements.remove(elements.get(position));
-        Utilities.addElements(sharedPreferences, elements, tag);
+//        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE);
+//        ArrayList<String> elements = Utilities.getElements(sharedPreferences, tag);
+//        sharedPreferences.edit().remove(tag).apply();
+//        elements.remove(elements.get(position));
+//        Utilities.addElements(sharedPreferences, elements, tag);
+        SQLiteHelper helper = new SQLiteHelper(getActivity());
+        ArrayList<QuadrantDetail> details = helper.getDetails(parentTitle, Utilities.q2Q(quadrant));
+        QuadrantDetail quadrantDetail = details.get(position);
+        helper.removeEntry(parentTitle, quadrant, quadrantDetail.getDetails());
         // notify data set changed
         if (mAdapter.getCount() > 0) mAdapter.clear();
-        mAdapter.addAll(elements);
+        details.remove(position);
+        mAdapter.addAll(Utilities.QuadrantDetails2StringsArray(details));
         mAdapter.notifyDataSetChanged();
     }
 
     public void ModifyQuadrantDialogEditCallback(int position, String newDetails) {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE);
-        String oldDetails = Utilities.getElement(sharedPreferences, position, tag);
+//        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE);
+//        String oldDetails = Utilities.getElement(sharedPreferences, position, tag);
+//        if (!oldDetails.equals(newDetails)) {
+//            // update JSON sharedpreferences
+//            ArrayList<String> elements = Utilities.getElements(sharedPreferences, tag);
+//            sharedPreferences.edit().remove(tag).apply();                       // out with the old
+//            elements.remove(oldDetails);
+//            elements.add(position, newDetails);
+//            Utilities.addElements(sharedPreferences, elements, tag);            // in with the new
+//            // notify data set changed
+//            if (mAdapter.getCount() > 0) mAdapter.clear();
+//            mAdapter.addAll(elements);
+//            mAdapter.notifyDataSetChanged();
+//        } // don't need to do anything otherwise
+        SQLiteHelper helper = new SQLiteHelper(getActivity());
+        ArrayList<QuadrantDetail> details = helper.getDetails(parentTitle, Utilities.q2Q(quadrant));
+        QuadrantDetail quadrantDetail = details.get(position);
+        String oldDetails = quadrantDetail.getDetails();
         if (!oldDetails.equals(newDetails)) {
-            // update JSON sharedpreferences
-            ArrayList<String> elements = Utilities.getElements(sharedPreferences, tag);
-            sharedPreferences.edit().remove(tag).apply();                       // out with the old
-            elements.remove(oldDetails);
-            elements.add(position, newDetails);
-            Utilities.addElements(sharedPreferences, elements, tag);            // in with the new
-            // notify data set changed
-            if (mAdapter.getCount() > 0) mAdapter.clear();
-            mAdapter.addAll(elements);
-            mAdapter.notifyDataSetChanged();
-        } // don't need to do anything otherwise
+            helper.updateEntry(parentTitle, quadrant, oldDetails, parentTitle, quadrant, newDetails);
+        }
+        if (mAdapter.getCount() > 0) mAdapter.clear();
+        mAdapter.addAll(Utilities.QuadrantDetails2StringsArray(details));
+        mAdapter.notifyDataSetChanged();
     }
 
 }
