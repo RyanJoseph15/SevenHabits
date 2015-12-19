@@ -367,19 +367,8 @@ public class NavigationDrawerFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
 
         // update to previous fragment (should work back to welcome/tutorial fragment)
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         if (elements.size() > 1) {
             selectItem(position);
-//            QuadrantChartFragment quadrantChartFragment;
-//            if (fragmentManager.findFragmentByTag(MainActivity.QUADRANTCHARTTAG) == null) {
-//                quadrantChartFragment = QuadrantChartFragment.newInstance(position + 1, Utilities.getElement(sharedPreferences, position, Utilities.TITLES));
-//            } else {
-//                quadrantChartFragment = (QuadrantChartFragment) fragmentManager.findFragmentByTag(MainActivity.QUADRANTCHARTTAG);
-//                quadrantChartFragment.setTitle(Utilities.getElement(sharedPreferences, position - 1, Utilities.TITLES));
-//            }
-//            fragmentManager.beginTransaction()
-//                    .replace(R.id.container, quadrantChartFragment, MainActivity.QUADRANTCHARTTAG)
-//                    .commit();
         } else {
             // we are down to none and need to open up a welcome/tutorial fragment
         }
@@ -408,6 +397,7 @@ public class NavigationDrawerFragment extends Fragment {
             SQLiteHelper helper = new SQLiteHelper(getActivity());
             boolean unique = helper.updateTitle(oldElement, newElement);
             if (!unique) Toast.makeText(getActivity(), notUnique, Toast.LENGTH_SHORT).show();
+            else selectItem(position);
         } else {
             Toast.makeText(getActivity(), notUnique, Toast.LENGTH_SHORT).show();
         }

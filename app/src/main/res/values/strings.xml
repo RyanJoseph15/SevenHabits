@@ -13,6 +13,7 @@
     <string name="navigation_drawer_close">Navigation drawer closed</string>
 
     <string name="title">Enter chart name</string>
+    <string name="title_edit">Edit chart name</string>
     <string name="task">Enter task details</string>
     <string name="task_edit">Edit task details</string>
 

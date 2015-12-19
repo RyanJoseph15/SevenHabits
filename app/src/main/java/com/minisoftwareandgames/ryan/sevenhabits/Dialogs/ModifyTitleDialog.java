@@ -43,7 +43,7 @@ public class ModifyTitleDialog extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View view = inflater.inflate(R.layout.dialog_new_task_info, null);
+        final View view = inflater.inflate(R.layout.dialog_edit_chart_info, null);
 
         final EditText mTitle = (EditText) view.findViewById(R.id.task_entered);
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
