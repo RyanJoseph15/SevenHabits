@@ -17,10 +17,6 @@ import java.util.ArrayList;
  */
 public class Utilities extends Application {
 
-    /* This is quick using preferences but an SQLite DB would have some really powerful applications
-     * TODO: eventually change all of this to an SQLite DB...
-     */
-
     public static final String TITLES = "Titles";
     public static final String TASKS = "Tasks";
     public static final String SEVENHABITS = "SevenHabits";

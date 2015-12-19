@@ -350,7 +350,6 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     public void ModifyQuadrantDialogDeleteCallback(int position) {
-        // TODO: update current fragment after completing this task
         // remove JSON sharedpreferences
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE);
         ArrayList<String> elements = Utilities.getElements(sharedPreferences, Utilities.TITLES);
@@ -372,8 +371,6 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     public void ModifyQuadrantDialogEditCallback(int position, String newElement) {
-        // TODO: update current fragment after completing this task
-
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE);
         String oldElement = Utilities.getElement(sharedPreferences, position, Utilities.TITLES);
         String notUnique = newElement + " " + getString(R.string.not_unique);
