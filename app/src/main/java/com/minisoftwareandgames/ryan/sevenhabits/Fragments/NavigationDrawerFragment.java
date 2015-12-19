@@ -367,11 +367,7 @@ public class NavigationDrawerFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
 
         // update to previous fragment (should work back to welcome/tutorial fragment)
-        if (elements.size() > 1) {
-            selectItem(position);
-        } else {
-            // we are down to none and need to open up a welcome/tutorial fragment
-        }
+        syncFragments(elements, position, true);                // true <- removal of title
 
     }
 
@@ -397,9 +393,17 @@ public class NavigationDrawerFragment extends Fragment {
             SQLiteHelper helper = new SQLiteHelper(getActivity());
             boolean unique = helper.updateTitle(oldElement, newElement);
             if (!unique) Toast.makeText(getActivity(), notUnique, Toast.LENGTH_SHORT).show();
-            else selectItem(position);
+            else syncFragments(elements, position, false);          // false <- no title removal
         } else {
             Toast.makeText(getActivity(), notUnique, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void syncFragments(ArrayList<?> elements, int position, boolean removalCaution) {
+        if (removalCaution && elements.size() > 1) {
+            selectItem(position);
+        } else if (!removalCaution) {
+            selectItem(position);
         }
     }
 

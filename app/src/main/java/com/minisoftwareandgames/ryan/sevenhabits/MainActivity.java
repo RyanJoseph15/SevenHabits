@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 
 import com.minisoftwareandgames.ryan.sevenhabits.Fragments.NavigationDrawerFragment;
 import com.minisoftwareandgames.ryan.sevenhabits.Fragments.QuadrantChartFragment;
+import com.minisoftwareandgames.ryan.sevenhabits.Fragments.QuadrantFragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
@@ -86,8 +88,15 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             fragmentManager.beginTransaction()
                 .replace(R.id.container, quadrantChartFragment, QUADRANTCHARTTAG)
                 .commit();
+            QuadrantFragment quadrantFragment = (QuadrantFragment) fragmentManager.findFragmentByTag(MainActivity.QUADRANTTAG);
+            if (quadrantFragment != null) {
+                fragmentManager
+                        .beginTransaction()
+                        .remove(quadrantFragment)
+                        .commit();
+                fragmentManager.popBackStack();
+            }
         }
-
     }
 
     public void onSectionAttached(String title) {

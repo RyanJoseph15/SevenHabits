@@ -116,6 +116,7 @@ public class QuadrantChartFragment extends Fragment implements View.OnClickListe
         } else {
             quadrantFragment = (QuadrantFragment) fragmentManager.findFragmentByTag(MainActivity.QUADRANTTAG);
             quadrantFragment.setParentTitle(this.title);
+            quadrantFragment.setQuadrant(quadrant);
         }
         fragmentManager.beginTransaction()
                 .add(R.id.container, quadrantFragment, MainActivity.QUADRANTTAG)

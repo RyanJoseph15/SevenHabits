@@ -149,6 +149,12 @@ public class QuadrantFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        ((MainActivity) getActivity()).updateTitle(parentTitle);
+    }
+
+    @Override
     public void onDestroy() {
         Log.d("CHECK", "QuadrantChartFragment title: " + this.parentTitle);
         ((MainActivity) getActivity()).updateTitle(this.parentTitle);
