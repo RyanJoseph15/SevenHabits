@@ -10,6 +10,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.minisoftwareandgames.ryan.sevenhabits.Fragments.QuadrantFragment;
 import com.minisoftwareandgames.ryan.sevenhabits.MainActivity;
@@ -43,14 +44,13 @@ public class ModifyQuadrantDialog extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View view = inflater.inflate(R.layout.dialog_new_task_info, null);
+        final View view = inflater.inflate(R.layout.dialog_edit_task_info, null);
 
-        final EditText mTitle = (EditText) view.findViewById(R.id.task_entered);
-//        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
-//                Utilities.SEVENHABITS, Context.MODE_PRIVATE);
-//        mTitle.setText(Utilities.getElement(sharedPreferences, position, fragment.getmTag()));
         SQLiteHelper helper = new SQLiteHelper(getActivity());
+        final EditText mTitle = (EditText) view.findViewById(R.id.task_entered);
         mTitle.setText(helper.getDetails(fragment.getParentTitle(), Utilities.q2Q(fragment.getQuadrant())).get(position).getDetails());
+        final Spinner changeQuadrant = (Spinner) view.findViewById(R.id.change_quadrant);
+        changeQuadrant.setSelection(fragment.getQuadrant() - 1);    // array is 0 base but quadrants start at 1
         builder.setView(view)
                 .setNeutralButton("delete",
                         new DialogInterface.OnClickListener() {
@@ -60,12 +60,13 @@ public class ModifyQuadrantDialog extends DialogFragment {
                                 getDialog().dismiss();
                             }
                         })
-                .setPositiveButton("edit",
+                .setPositiveButton("save",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 fragment.ModifyQuadrantDialogEditCallback(position,
-                                        mTitle.getText().toString().trim());
+                                        mTitle.getText().toString().trim(),
+                                        changeQuadrant.getSelectedItemPosition() + 1);
                                 getDialog().dismiss();
                             }
                         })

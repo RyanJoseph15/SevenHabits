@@ -58,7 +58,7 @@ public class ModifyTitleDialog extends DialogFragment {
                                 getDialog().dismiss();
                             }
                         })
-                .setPositiveButton("edit",
+                .setPositiveButton("save",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {

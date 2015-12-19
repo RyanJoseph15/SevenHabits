@@ -14,11 +14,19 @@
 
     <string name="title">Enter chart name</string>
     <string name="task">Enter task details</string>
+    <string name="task_edit">Edit task details</string>
 
     <string name="quadrant1">Important and Urgent</string>
     <string name="quadrant2">Important and Not Urgent</string>
     <string name="quadrant3">Not Important and Urgent</string>
     <string name="quadrant4">Not Important and Not Urgent</string>
+
+    <string-array name="quadrants">
+        <item>Important and Urgent</item>
+        <item>Important and Not Urgent</item>
+        <item>Not Important and Urgent</item>
+        <item>Not Important and Not Urgent</item>
+    </string-array>
 
     <string name="not_unique">already exists.</string>
 </resources>

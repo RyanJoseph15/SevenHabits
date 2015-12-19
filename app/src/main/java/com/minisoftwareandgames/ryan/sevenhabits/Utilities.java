@@ -24,6 +24,10 @@ public class Utilities extends Application {
     public static final String TITLES = "Titles";
     public static final String TASKS = "Tasks";
     public static final String SEVENHABITS = "SevenHabits";
+    public static String QUAD1 = "Important and Urgent";
+    public static String QUAD2 = "Important and Not Urgent";
+    public static String QUAD3 = "Not Important and Urgent";
+    public static String QUAD4 = "Not Important and Not Urgent";
 
     public enum QUADRANT {
         ONE, TWO, THREE, FOUR, ALL
@@ -135,6 +139,21 @@ public class Utilities extends Application {
         else if (quad == 3) return QUADRANT.THREE;
         else if (quad == 4) return QUADRANT.FOUR;
         else return QUADRANT.ALL;
+    }
+
+    public static String quad2Title(int quad) {
+        switch (quad) {
+            case 1:
+                return QUAD1;
+            case 2:
+                return QUAD2;
+            case 3:
+                return QUAD3;
+            case 4:
+                return QUAD4;
+            default:
+                return null;
+        }
     }
 
 }

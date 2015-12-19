@@ -44,6 +44,39 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         values.put(COLUMN_QUAD, quadrant);
         values.put(COLUMN_DETAILS, details);
         database.insert(TABLE_QDetails, null, values);
+        database.close();
+    }
+
+    public boolean uniqueTitle(String title) {
+        SQLiteDatabase database = getReadableDatabase();
+        String query = "SELECT " + COLUMN_TITLE + " FROM " + TABLE_QDetails +
+                " WHERE " + COLUMN_TITLE + " = '" + title + "'";
+        Cursor cursor = database.rawQuery(query, null);
+        if (cursor.getCount() > 0) {                                            // if not unique
+            cursor.close();
+            database.close();
+            return false;
+        } else {
+            cursor.close();
+            database.close();
+            return true;
+        }
+    }
+
+    public void removeEntry(String title, int quadrant, String details) {
+        SQLiteDatabase database = getWritableDatabase();
+        String whereClause = COLUMN_TITLE + " = ? AND " + COLUMN_QUAD + " = ? AND " + COLUMN_DETAILS + " = ?";
+        String[] whereArgs = {title, String.valueOf(quadrant), details};
+        database.delete(TABLE_QDetails, whereClause, whereArgs);
+        database.close();
+    }
+
+    public void removeTitle(String title) {
+        SQLiteDatabase database = getWritableDatabase();
+        String whereClause = COLUMN_TITLE + " = '";
+        String[] whereArgs = {title};
+        database.delete(TABLE_QDetails, whereClause, whereArgs);
+        database.close();
     }
 
     public void updateEntry(
@@ -56,28 +89,15 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_DETAILS, newDetails);
         String whereClause = COLUMN_TITLE + " = ? AND " + COLUMN_QUAD + " = ? AND " + COLUMN_DETAILS + " = ?";
         String[] whereArgs = {oldTitle, String.valueOf(oldQuadrant), oldDetails};
-        database.update(TABLE_QDetails, contentValues, whereClause, whereArgs);
-    }
-
-    public void removeEntry(String title, int quadrant, String details) {
-        SQLiteDatabase database = getWritableDatabase();
-        String whereClause = COLUMN_TITLE + " = ? AND " + COLUMN_QUAD + " = ? AND " + COLUMN_DETAILS + " = ?";
-        String[] whereArgs = {title, String.valueOf(quadrant), details};
-        database.delete(TABLE_QDetails, whereClause, whereArgs);
-        // Don't know if it will be okay with passing quadrant as a string
+        Log.d("update affected: ", ""+database.update(TABLE_QDetails, contentValues, whereClause, whereArgs) + " rows.");
+        database.close();
     }
 
     public boolean updateTitle(String oldTitle, String newTitle) {
         // check if title already exists
-        SQLiteDatabase database = getReadableDatabase();
-        String query = "SELECT " + COLUMN_TITLE + " FROM " + TABLE_QDetails +
-                " WHERE " + COLUMN_TITLE + " = '" + newTitle + "'";
-        Cursor cursor = database.rawQuery(query, null);
-        if (cursor.getCount() > 0) {                                            // if not unique
-            cursor.close();
+        if (!uniqueTitle(newTitle)) {                                           // Does exist
             return false;
-        } else {                                                                // if unique
-            cursor.close();
+        } else {                                                                // Does not exist
             ArrayList<QuadrantDetail> detailList = getDetails(oldTitle, Utilities.QUADRANT.ALL);
             if (detailList != null) {
                 for (QuadrantDetail detail : detailList) {
@@ -87,13 +107,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             }
             return true;
         }
-    }
-
-    public void removeTitle(String title) {
-        SQLiteDatabase database = getWritableDatabase();
-        String whereClause = COLUMN_TITLE + " = '";
-        String[] whereArgs = {title};
-        database.delete(TABLE_QDetails, whereClause, whereArgs);
     }
 
     public ArrayList<QuadrantDetail> getDetails(String detailTitle, Utilities.QUADRANT quad) {
@@ -131,8 +144,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 details.add(quadrantDetail);
             } while (cursor.moveToNext());
             cursor.close();
+            database.close();
             return details;
         } else {
+            database.close();
             return null;
         }
     }

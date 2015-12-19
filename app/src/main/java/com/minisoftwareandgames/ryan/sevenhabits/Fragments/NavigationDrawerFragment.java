@@ -335,11 +335,17 @@ public class NavigationDrawerFragment extends Fragment {
     public void NewChartInfoDialogCallback(String title) {
 //        Log.d("CHECK", "callback");
         // add to the list of titles
-        Utilities.addElement(getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE), title, Utilities.TITLES);
-        // update the view
-        if (mAdapter.getCount() > 0) mAdapter.clear();
-        mAdapter.addAll(Utilities.getElements(getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE), Utilities.TITLES));
-        mAdapter.notifyDataSetChanged();
+        SQLiteHelper helper = new SQLiteHelper(getActivity());
+        if (helper.uniqueTitle(title)) {
+            Utilities.addElement(getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE), title, Utilities.TITLES);
+            // update the view
+            if (mAdapter.getCount() > 0) mAdapter.clear();
+            mAdapter.addAll(Utilities.getElements(getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE), Utilities.TITLES));
+            mAdapter.notifyDataSetChanged();
+        } else {
+            String notUnique = title + " " + getString(R.string.not_unique);
+            Toast.makeText(getActivity(), notUnique, Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void ModifyQuadrantDialogDeleteCallback(int position) {
@@ -365,6 +371,8 @@ public class NavigationDrawerFragment extends Fragment {
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE);
         String oldElement = Utilities.getElement(sharedPreferences, position, Utilities.TITLES);
+        String notUnique = newElement + " " + getString(R.string.not_unique);
+
         if (!oldElement.equals(newElement)) {
             // update JSON sharedpreferences
             ArrayList<String> elements = Utilities.getElements(sharedPreferences, Utilities.TITLES);
@@ -379,9 +387,10 @@ public class NavigationDrawerFragment extends Fragment {
             // we need to update our database for each quadrant to match the new title
             SQLiteHelper helper = new SQLiteHelper(getActivity());
             boolean unique = helper.updateTitle(oldElement, newElement);
-            String notUnique = newElement + " " + getString(R.string.not_unique);
             if (!unique) Toast.makeText(getActivity(), notUnique, Toast.LENGTH_SHORT).show();
-        } // don't need to do anything otherwise
+        } else {
+            Toast.makeText(getActivity(), notUnique, Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

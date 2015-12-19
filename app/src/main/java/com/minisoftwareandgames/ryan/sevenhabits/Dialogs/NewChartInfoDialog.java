@@ -40,7 +40,7 @@ public class NewChartInfoDialog extends DialogFragment {
 
         final EditText mTitle = (EditText) view.findViewById(R.id.title_entered);
         builder.setView(view)
-            .setPositiveButton("okay",
+            .setPositiveButton("save",
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {

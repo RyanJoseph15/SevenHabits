@@ -40,7 +40,7 @@ public class NewTaskDialog extends DialogFragment {
 
         final EditText mTitle = (EditText) view.findViewById(R.id.task_entered);
         builder.setView(view)
-                .setPositiveButton("okay",
+                .setPositiveButton("save",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
