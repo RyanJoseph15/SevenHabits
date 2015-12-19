@@ -73,7 +73,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public void removeTitle(String title) {
         SQLiteDatabase database = getWritableDatabase();
-        String whereClause = COLUMN_TITLE + " = '";
+        String whereClause = COLUMN_TITLE + " = ?";
         String[] whereArgs = {title};
         database.delete(TABLE_QDetails, whereClause, whereArgs);
         database.close();
