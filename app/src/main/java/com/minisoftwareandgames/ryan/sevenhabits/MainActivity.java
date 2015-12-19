@@ -1,5 +1,6 @@
 package com.minisoftwareandgames.ryan.sevenhabits;
 
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,10 +16,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.minisoftwareandgames.ryan.sevenhabits.Fragments.NavigationDrawerFragment;
 import com.minisoftwareandgames.ryan.sevenhabits.Fragments.QuadrantChartFragment;
 import com.minisoftwareandgames.ryan.sevenhabits.Fragments.QuadrantFragment;
+import com.minisoftwareandgames.ryan.sevenhabits.Fragments.WelcomeFragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
@@ -27,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
+    private Spinner viewChanger;
 
     public static final String QUADRANTCHARTTAG = "quadrantcharttag";
     public static final String QUADRANTTAG = "quadranttag";
@@ -34,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     public static final String NEWTASKTAG = "newtasktag";
     public static final String MODIFYQUADRANTTAG = "modifyquadranttag";
     public static final String MODIFYTITLETAG = "modifytitletag";
+    public static final String WELCOMETAG = "welcometag";
 
     public void updateTitle(String title) {
         mNavigationDrawerFragment.getActionBar().setTitle(title);
@@ -47,7 +55,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         mTitle = getTitle();
         // set up the drawer.
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
-        int selected = PreferenceManager.getDefaultSharedPreferences(this).getInt("selected", -1);
+        SharedPreferences sharedPreferences = getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE);
+        int selected = sharedPreferences.getInt("mCurrentSelectedPosition", -1);
         this.onNavigationDrawerItemSelected(selected);
     }
 
@@ -76,6 +85,15 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         Log.d("CHECK", "position: " + position);
         if (position < 0) {
             // TODO: welcome and tutorial page
+            WelcomeFragment welcomeFragment;
+            if (fragmentManager.findFragmentByTag(WELCOMETAG) == null) {
+                welcomeFragment = WelcomeFragment.newInstance(position);
+            } else {
+                welcomeFragment = (WelcomeFragment) fragmentManager.findFragmentByTag(WELCOMETAG);
+            }
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, welcomeFragment, WELCOMETAG)
+                    .commit();
         } else {
             QuadrantChartFragment quadrantChartFragment;
             if (fragmentManager.findFragmentByTag(QUADRANTCHARTTAG) == null) {
@@ -87,14 +105,14 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             fragmentManager.beginTransaction()
                 .replace(R.id.container, quadrantChartFragment, QUADRANTCHARTTAG)
                 .commit();
-            QuadrantFragment quadrantFragment = (QuadrantFragment) fragmentManager.findFragmentByTag(MainActivity.QUADRANTTAG);
-            if (quadrantFragment != null) {
-                fragmentManager
-                        .beginTransaction()
-                        .remove(quadrantFragment)
-                        .commit();
-                fragmentManager.popBackStack();
-            }
+        }
+        QuadrantFragment quadrantFragment = (QuadrantFragment) fragmentManager.findFragmentByTag(MainActivity.QUADRANTTAG);
+        if (quadrantFragment != null) {
+            fragmentManager
+                    .beginTransaction()
+                    .remove(quadrantFragment)
+                    .commit();
+            fragmentManager.popBackStack();
         }
     }
 
@@ -109,6 +127,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.menu_main, menu);
+            MenuItem switcher = menu.findItem(R.id.action_switch_view);
+            switcher.setTitle(getResources().getString(R.string.action_spinner_list));
 //            restoreActionBar();
             return true;
         }
@@ -128,7 +148,19 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
              * It stopped after I added onBackPressed() settings. */
             this.onPause();
             return true;
-        } else return super.onOptionsItemSelected(item);
+        } else if (id == R.id.action_switch_view) {
+            String title = item.getTitle().toString();
+            String[] options = {getResources().getString(R.string.action_spinner_chart),
+                    getResources().getString(R.string.action_spinner_list)};
+            if (title.equals(options[0])) {
+                item.setTitle(options[1]);
+            } else {
+                item.setTitle(options[0]);
+            }
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

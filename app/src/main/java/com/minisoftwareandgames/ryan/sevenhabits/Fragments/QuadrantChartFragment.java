@@ -6,10 +6,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.NewTaskDialog;
 import com.minisoftwareandgames.ryan.sevenhabits.MainActivity;
 import com.minisoftwareandgames.ryan.sevenhabits.R;
 
@@ -86,6 +91,15 @@ public class QuadrantChartFragment extends Fragment implements View.OnClickListe
         super.onResume();
         Log.d("CHECK", "QuadrantChartFragment title: " + this.getTitle());
         ((MainActivity) getActivity()).updateTitle(this.getTitle());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_switch_view) {
+            Toast.makeText(getActivity(), "action_switch_view", Toast.LENGTH_SHORT).show();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /* ------------------------------------------------------------------------------------ /

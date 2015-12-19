@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.ModifyQuadrantDialog;
 import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.NewTaskDialog;
@@ -125,9 +127,10 @@ public class QuadrantFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // If the drawer is open, show the global app actions in the action bar. See also
-        // showGlobalContextActionBar, which controls the top-left area of the action bar.
         inflater.inflate(R.menu.menu_quadrant, menu);
+        MenuItem switcher = menu.findItem(R.id.action_switch_view);
+        switcher.setVisible(false);
+        getActivity().invalidateOptionsMenu();
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -137,6 +140,8 @@ public class QuadrantFragment extends Fragment {
             NewTaskDialog newTaskDialog = NewTaskDialog.newInstance(this);
             newTaskDialog.show(getFragmentManager(), MainActivity.NEWTASKTAG);
             return true;
+        } else if (item.getItemId() == R.id.action_switch_view) {
+            Toast.makeText(getActivity(), "action_switch_view", Toast.LENGTH_SHORT).show();
         }
 
         return super.onOptionsItemSelected(item);
