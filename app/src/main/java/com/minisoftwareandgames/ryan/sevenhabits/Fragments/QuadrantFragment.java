@@ -189,13 +189,16 @@ public class QuadrantFragment extends Fragment {
     }
 
     public void ModifyQuadrantDialogEditCallback(int position, String newDetails, int quad) {
+        // TODO: not getting updated in the view
         SQLiteHelper helper = new SQLiteHelper(getActivity());
         ArrayList<QuadrantDetail> details = helper.getDetails(parentTitle, Utilities.q2Q(quadrant));
         QuadrantDetail quadrantDetail = details.get(position);
         String oldDetails = quadrantDetail.getDetails();
         helper.updateEntry(parentTitle, quadrant, oldDetails, parentTitle, quad, newDetails);
         if (mAdapter.getCount() > 0) mAdapter.clear();
-        if (quad != quadrant) details.remove(position);                     // for updating view
+        details.remove(position);                                           // for updating view
+        if (quad == quadrant) details.add(QuadrantDetail.newInstance(
+                quadrantDetail.getTitle(), quadrant, newDetails));
         mAdapter.addAll(Utilities.QuadrantDetails2StringsArray(details));
         mAdapter.notifyDataSetChanged();
     }

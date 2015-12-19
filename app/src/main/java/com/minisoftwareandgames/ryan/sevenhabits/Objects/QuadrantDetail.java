@@ -18,6 +18,7 @@ public class QuadrantDetail {
     }
 
     public void setTitle(String title) {this.title = title;}
+    public String getTitle() {return this.title;}
     public void setQuadrant(int quadrant) {this.quadrant = quadrant;}
     public int getQuadrant() {return this.quadrant;}
     public void setDetails(String details) {this.details = details;}
