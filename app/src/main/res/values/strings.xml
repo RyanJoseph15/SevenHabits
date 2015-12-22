@@ -9,7 +9,7 @@
     <string name="action_add_task">Add Task</string>
 
     <string name="chart_view">Chart view</string>
-    <string name="chart_list_view">List view</string>
+    <string name="chart_list_view">Quick view</string>
 
     <string name="title_section1">First</string>
     <string name="title_section2">Second</string>
