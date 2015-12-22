@@ -208,21 +208,32 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                                     this.getApplicationContext(),
                                     elements);
                             chartListView.setAdapter(adapter);
+                            chartListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    ModifyQuadrantListViewItemDialog dialog =
+                                            ModifyQuadrantListViewItemDialog.newInstance(
+                                                    quadrantChartFragment,
+                                                    elements,
+                                                    position);
+                                    dialog.show(getSupportFragmentManager(), MainActivity.MODIFYQUADRANTTAG);
+                                }
+                            });
                         } else {
                             Log.d("actions", "adapter != null");
                             quadrantChartFragment.updatemAdapterForNewList(quadrantChartFragment.getTitle());
+                            chartListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    ModifyQuadrantListViewItemDialog dialog =
+                                            ModifyQuadrantListViewItemDialog.newInstance(
+                                                    quadrantChartFragment,
+                                                    quadrantChartFragment.getmAdapter().getElements(),
+                                                    position);
+                                    dialog.show(getSupportFragmentManager(), MainActivity.MODIFYQUADRANTTAG);
+                                }
+                            });
                         }
-                        chartListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                ModifyQuadrantListViewItemDialog dialog =
-                                        ModifyQuadrantListViewItemDialog.newInstance(
-                                                quadrantChartFragment,
-                                                elements,
-                                                position);
-                                dialog.show(getSupportFragmentManager(), MainActivity.MODIFYQUADRANTTAG);
-                            }
-                        });
                     }
                     sharedPreferences.edit().putBoolean(MainActivity.DISPLAYCHART, false).apply();
                 }

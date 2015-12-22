@@ -27,6 +27,9 @@ public class ChartListAdapter extends BaseAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         elements = list;
     }
+
+    public ArrayList<QuadrantDetail> getElements() {return this.elements;}
+
     @Override
     public int getCount() {
         if (elements != null)
