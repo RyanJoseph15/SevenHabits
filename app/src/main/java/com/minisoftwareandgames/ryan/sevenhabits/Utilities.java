@@ -4,8 +4,6 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.minisoftwareandgames.ryan.sevenhabits.Objects.QuadrantDetail;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

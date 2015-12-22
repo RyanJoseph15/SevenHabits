@@ -1,4 +1,4 @@
-package com.minisoftwareandgames.ryan.sevenhabits.Objects;
+package com.minisoftwareandgames.ryan.sevenhabits;
 
 /**
  * Created by ryan on 12/18/15.

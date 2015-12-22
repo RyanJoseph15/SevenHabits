@@ -7,8 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.minisoftwareandgames.ryan.sevenhabits.Objects.QuadrantDetail;
-
 import java.util.ArrayList;
 
 /**
@@ -132,7 +130,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                     query += 4 + "'";
                     break;
             }
-        } else query += "'";
+        } else query += "' ORDER BY " + COLUMN_QUAD + " ASC";
+        Log.d("query", query);
         Cursor cursor = database.rawQuery(query, null);
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();

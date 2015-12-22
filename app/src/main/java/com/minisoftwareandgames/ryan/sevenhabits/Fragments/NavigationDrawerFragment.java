@@ -196,6 +196,9 @@ public class NavigationDrawerFragment extends Fragment {
                     Log.d("CHECK", "QuadrantChartFragment title: " + quadrantChartFragment.getTitle());
                     ((MainActivity) getActivity()).updateTitle(quadrantChartFragment.getTitle());
                 }
+                // configure action text based on current value (gets reset with open/close NavBar)
+                // gets configured here, and when it is selected in QuadrantChartFragment.java
+
             }
 
             @Override

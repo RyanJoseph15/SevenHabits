@@ -1,10 +1,7 @@
 package com.minisoftwareandgames.ryan.sevenhabits.Fragments;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,7 +17,7 @@ import android.widget.Toast;
 import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.ModifyQuadrantDialog;
 import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.NewTaskDialog;
 import com.minisoftwareandgames.ryan.sevenhabits.MainActivity;
-import com.minisoftwareandgames.ryan.sevenhabits.Objects.QuadrantDetail;
+import com.minisoftwareandgames.ryan.sevenhabits.QuadrantDetail;
 import com.minisoftwareandgames.ryan.sevenhabits.R;
 import com.minisoftwareandgames.ryan.sevenhabits.SQLiteHelper;
 import com.minisoftwareandgames.ryan.sevenhabits.Utilities;

@@ -1,22 +1,28 @@
 package com.minisoftwareandgames.ryan.sevenhabits.Fragments;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 
-import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.NewTaskDialog;
+import com.minisoftwareandgames.ryan.sevenhabits.ChartListAdapter;
 import com.minisoftwareandgames.ryan.sevenhabits.MainActivity;
+import com.minisoftwareandgames.ryan.sevenhabits.QuadrantDetail;
 import com.minisoftwareandgames.ryan.sevenhabits.R;
+import com.minisoftwareandgames.ryan.sevenhabits.SQLiteHelper;
+import com.minisoftwareandgames.ryan.sevenhabits.Utilities;
+
+import java.util.ArrayList;
 
 /**
  * Created by ryan on 12/18/15.
@@ -25,6 +31,9 @@ public class QuadrantChartFragment extends Fragment implements View.OnClickListe
 
     private static final String ARG_SECTION_NUMBER = "section_number";
     private String title;
+
+    private ListView chartListView;
+    private LinearLayout chartView;
 
     private Button quadrant1;
     private Button quadrant2;
@@ -46,12 +55,7 @@ public class QuadrantChartFragment extends Fragment implements View.OnClickListe
     public String getTitle() {
         return this.title;
     }
-
-
-
-
-
-
+    public LinearLayout getChartView() {return this.chartView;}
 
     /* ------------------------------------------------------------------------------------ /
      *                                   Override methods
@@ -70,7 +74,8 @@ public class QuadrantChartFragment extends Fragment implements View.OnClickListe
         (quadrant2 = (Button) view.findViewById(R.id.button2)).setOnClickListener(this);
         (quadrant3 = (Button) view.findViewById(R.id.button3)).setOnClickListener(this);
         (quadrant4 = (Button) view.findViewById(R.id.button4)).setOnClickListener(this);
-
+        chartView = (LinearLayout) view.findViewById(R.id.chart_view);
+        chartListView = (ListView) view.findViewById(R.id.chart_list_view);
         setHasOptionsMenu(true);
         return view;
     }
@@ -96,9 +101,31 @@ public class QuadrantChartFragment extends Fragment implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_switch_view) {
-            Toast.makeText(getActivity(), "action_switch_view", Toast.LENGTH_SHORT).show();
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
+                    Utilities.SEVENHABITS, Context.MODE_PRIVATE);
+            String title = item.getTitle().toString();
+            String[] options = {getResources().getString(R.string.chart_view),
+                    getResources().getString(R.string.chart_list_view)};
+            if (title.equals(options[0])) {
+                // un-hide LinearLayout
+                item.setTitle(options[1]);
+                chartView.setVisibility(View.VISIBLE);
+                sharedPreferences.edit().putBoolean(MainActivity.DISPLAYCHART, true).apply();
+            } else {
+                // hide LinearLayout
+                item.setTitle(options[0]);
+                chartView.setVisibility(View.GONE);
+                SQLiteHelper helper = new SQLiteHelper(getActivity());
+                ArrayList<QuadrantDetail> elements = helper.getDetails(
+                        getTitle(), Utilities.QUADRANT.ALL);
+                ChartListAdapter mAdapter = new ChartListAdapter(
+                        getActivity().getApplicationContext(),
+                        elements);
+                chartListView.setAdapter(mAdapter);
+                sharedPreferences.edit().putBoolean(MainActivity.DISPLAYCHART, false).apply();
+            }
+            return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
