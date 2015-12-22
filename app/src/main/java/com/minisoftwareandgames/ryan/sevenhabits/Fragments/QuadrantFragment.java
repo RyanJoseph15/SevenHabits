@@ -126,7 +126,8 @@ public class QuadrantFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_quadrant, menu);
         MenuItem switcher = menu.findItem(R.id.action_switch_view);
-        switcher.setVisible(false);
+        if (switcher != null)
+            switcher.setVisible(false);
         getActivity().invalidateOptionsMenu();
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -176,6 +177,14 @@ public class QuadrantFragment extends Fragment {
         if (mAdapter.getCount() > 0) mAdapter.clear();
         mAdapter.addAll(Utilities.QuadrantDetails2StringsArray(helper.getDetails(parentTitle, Utilities.q2Q(quadrant))));
         mAdapter.notifyDataSetChanged();
+        // notify data set changed for GONE list view
+        QuadrantChartFragment quadrantChartFragment = (QuadrantChartFragment) getActivity()
+                .getSupportFragmentManager()
+                .findFragmentByTag(MainActivity.QUADRANTCHARTTAG);
+        if (quadrantChartFragment != null && quadrantChartFragment.getmAdapter() != null) {
+            // quadrantChartFragment should never be null - precautionary
+            quadrantChartFragment.getmAdapter().add(QuadrantDetail.newInstance(parentTitle, quadrant, details));
+        }
     }
 
     public void ModifyQuadrantDialogDeleteCallback(int position) {
@@ -188,6 +197,14 @@ public class QuadrantFragment extends Fragment {
         details.remove(position);
         mAdapter.addAll(Utilities.QuadrantDetails2StringsArray(details));
         mAdapter.notifyDataSetChanged();
+        // notify data set changed for GONE list view
+        QuadrantChartFragment quadrantChartFragment = (QuadrantChartFragment) getActivity()
+                .getSupportFragmentManager()
+                .findFragmentByTag(MainActivity.QUADRANTCHARTTAG);
+        if (quadrantChartFragment != null && quadrantChartFragment.getmAdapter() != null) {
+            // quadrantChartFragment should never be null - precautionary
+            quadrantChartFragment.getmAdapter().notifyDataSetChanged();
+        }
     }
 
     public void ModifyQuadrantDialogEditCallback(int position, String newDetails, int quad) {
@@ -203,6 +220,15 @@ public class QuadrantFragment extends Fragment {
                 quadrantDetail.getTitle(), quadrant, newDetails));
         mAdapter.addAll(Utilities.QuadrantDetails2StringsArray(details));
         mAdapter.notifyDataSetChanged();
+        // notify data set changed for GONE list view
+        QuadrantChartFragment quadrantChartFragment = (QuadrantChartFragment) getActivity()
+                .getSupportFragmentManager()
+                .findFragmentByTag(MainActivity.QUADRANTCHARTTAG);
+        if (quadrantChartFragment != null && quadrantChartFragment.getmAdapter() != null) {
+            // quadrantChartFragment should never be null - precautionary
+            quadrantChartFragment.getmAdapter().add(QuadrantDetail.newInstance(
+                    parentTitle, quadrant, newDetails));
+        }
     }
 
 }

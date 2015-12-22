@@ -47,9 +47,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public boolean uniqueTitle(String title) {
         SQLiteDatabase database = getReadableDatabase();
-        String query = "SELECT " + COLUMN_TITLE + " FROM " + TABLE_QDetails +
-                " WHERE " + COLUMN_TITLE + " = '" + title + "'";
-        Cursor cursor = database.rawQuery(query, null);
+        String query = "SELECT " + COLUMN_TITLE + " FROM " + TABLE_QDetails + " WHERE ? = ?";
+        String[] args = {COLUMN_TITLE, title};
+        Cursor cursor = database.rawQuery(query, args);
         if (cursor.getCount() > 0) {                                            // if not unique
             cursor.close();
             database.close();
@@ -147,7 +147,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             return details;
         } else {
             database.close();
-            return null;
+            return new ArrayList<>();
         }
     }
 

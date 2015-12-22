@@ -35,7 +35,8 @@
                 android:layout_weight="1"
                 android:background="@color/green"
                 android:textSize="@dimen/abc_text_size_large_material"
-                android:padding="10dp" />
+                android:padding="10dp"
+                android:textColor="#000" />
 
             <Button
                 android:layout_width="0dp"
@@ -45,7 +46,8 @@
                 android:layout_weight="1"
                 android:background="@color/blue"
                 android:textSize="@dimen/abc_text_size_large_material"
-                android:padding="10dp" />
+                android:padding="10dp"
+                android:textColor="#000" />
         </LinearLayout>
 
         <LinearLayout
@@ -64,7 +66,8 @@
                 android:layout_weight="1"
                 android:background="@color/yellow"
                 android:textSize="@dimen/abc_text_size_large_material"
-                android:padding="10dp" />
+                android:padding="10dp"
+                android:textColor="#000" />
 
             <Button
                 android:layout_width="0dp"
@@ -74,7 +77,8 @@
                 android:layout_weight="1"
                 android:background="@color/red"
                 android:textSize="@dimen/abc_text_size_large_material"
-                android:padding="10dp" />
+                android:padding="10dp"
+                android:textColor="#000" />
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

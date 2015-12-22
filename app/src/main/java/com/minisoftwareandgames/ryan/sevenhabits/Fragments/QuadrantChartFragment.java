@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -11,11 +12,14 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.minisoftwareandgames.ryan.sevenhabits.ChartListAdapter;
+import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.ModifyQuadrantDialog;
+import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.ModifyQuadrantListViewItemDialog;
 import com.minisoftwareandgames.ryan.sevenhabits.MainActivity;
 import com.minisoftwareandgames.ryan.sevenhabits.QuadrantDetail;
 import com.minisoftwareandgames.ryan.sevenhabits.R;
@@ -34,6 +38,7 @@ public class QuadrantChartFragment extends Fragment implements View.OnClickListe
 
     private ListView chartListView;
     private LinearLayout chartView;
+    private ChartListAdapter mAdapter;
 
     private Button quadrant1;
     private Button quadrant2;
@@ -56,6 +61,15 @@ public class QuadrantChartFragment extends Fragment implements View.OnClickListe
         return this.title;
     }
     public LinearLayout getChartView() {return this.chartView;}
+    public ChartListAdapter getmAdapter() {return this.mAdapter;}
+    public void updatemAdapterForNewList(String title) {
+        if (mAdapter != null) {
+            SQLiteHelper helper = new SQLiteHelper(getActivity());
+            ArrayList<QuadrantDetail> elements = helper.getDetails(title, Utilities.QUADRANT.ALL);
+            mAdapter.newList(elements);
+        }
+    }
+    public ListView getChartListView() {return this.chartListView;}
 
     /* ------------------------------------------------------------------------------------ /
      *                                   Override methods
@@ -76,6 +90,12 @@ public class QuadrantChartFragment extends Fragment implements View.OnClickListe
         (quadrant4 = (Button) view.findViewById(R.id.button4)).setOnClickListener(this);
         chartView = (LinearLayout) view.findViewById(R.id.chart_view);
         chartListView = (ListView) view.findViewById(R.id.chart_list_view);
+        SQLiteHelper helper = new SQLiteHelper(getActivity());
+        ArrayList<QuadrantDetail> elements = helper.getDetails(getTitle(), Utilities.QUADRANT.ALL);
+        mAdapter = new ChartListAdapter(
+                getActivity().getApplicationContext(),
+                elements);
+        chartListView.setAdapter(mAdapter);
         setHasOptionsMenu(true);
         return view;
     }
@@ -96,37 +116,6 @@ public class QuadrantChartFragment extends Fragment implements View.OnClickListe
         super.onResume();
         Log.d("CHECK", "QuadrantChartFragment title: " + this.getTitle());
         ((MainActivity) getActivity()).updateTitle(this.getTitle());
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_switch_view) {
-            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
-                    Utilities.SEVENHABITS, Context.MODE_PRIVATE);
-            String title = item.getTitle().toString();
-            String[] options = {getResources().getString(R.string.chart_view),
-                    getResources().getString(R.string.chart_list_view)};
-            if (title.equals(options[0])) {
-                // un-hide LinearLayout
-                item.setTitle(options[1]);
-                chartView.setVisibility(View.VISIBLE);
-                sharedPreferences.edit().putBoolean(MainActivity.DISPLAYCHART, true).apply();
-            } else {
-                // hide LinearLayout
-                item.setTitle(options[0]);
-                chartView.setVisibility(View.GONE);
-                SQLiteHelper helper = new SQLiteHelper(getActivity());
-                ArrayList<QuadrantDetail> elements = helper.getDetails(
-                        getTitle(), Utilities.QUADRANT.ALL);
-                ChartListAdapter mAdapter = new ChartListAdapter(
-                        getActivity().getApplicationContext(),
-                        elements);
-                chartListView.setAdapter(mAdapter);
-                sharedPreferences.edit().putBoolean(MainActivity.DISPLAYCHART, false).apply();
-            }
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /* ------------------------------------------------------------------------------------ /
@@ -163,6 +152,48 @@ public class QuadrantChartFragment extends Fragment implements View.OnClickListe
                 .add(R.id.container, quadrantFragment, MainActivity.QUADRANTTAG)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    /* ------------------------------------------------------------------------------------ /
+     *                                   Callback methods
+     * ----------------------------------------------------------------------------------- */
+
+//    public void NewTaskDialogCallback(int quadrant, String details) {
+//        // add to the list of titles
+//        SQLiteHelper helper = new SQLiteHelper(getActivity());
+//        helper.addEntry(getTitle(), quadrant, details);
+//        // update the view
+//        if (mAdapter.getCount() > 0) mAdapter.clear();
+//        mAdapter.addAll(Utilities.QuadrantDetails2StringsArray(helper.getDetails(parentTitle, Utilities.q2Q(quadrant))));
+//        mAdapter.notifyDataSetChanged();
+//    }
+
+    public void ModifyQuadrantDialogEditCallback(int quadrant, int position, String newDetails, int quad) {
+        // TODO: see commit comments
+        SQLiteHelper helper = new SQLiteHelper(getActivity());
+        ArrayList<QuadrantDetail> details = helper.getDetails(getTitle(), Utilities.QUADRANT.ALL);
+        QuadrantDetail quadrantDetail = details.get(position);
+        String oldDetails = quadrantDetail.getDetails();
+        helper.updateEntry(getTitle(), quadrant, oldDetails, getTitle(), quad, newDetails);
+        if (mAdapter.getCount() > 0) mAdapter.clear();
+        details.remove(position);                                           // for updating view
+        if (quad == quadrant) details.add(QuadrantDetail.newInstance(
+                quadrantDetail.getTitle(), quadrant, newDetails));
+        mAdapter.addAll(details);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void ModifyQuadrantDialogDeleteCallback(int quadrant, int position) {
+        // quadrant field necessary to remove from database
+        SQLiteHelper helper = new SQLiteHelper(getActivity());
+        ArrayList<QuadrantDetail> details = helper.getDetails(getTitle(), Utilities.QUADRANT.ALL);
+        QuadrantDetail quadrantDetail = details.get(position);
+        helper.removeEntry(getTitle(), quadrant, quadrantDetail.getDetails());
+        // notify data set changed
+        if (mAdapter.getCount() > 0) mAdapter.clear();
+        details.remove(position);
+        mAdapter.addAll(details);
+        mAdapter.notifyDataSetChanged();
     }
 
 }

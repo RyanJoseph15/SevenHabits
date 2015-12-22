@@ -13,24 +13,29 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.ModifyQuadrantListViewItemDialog;
 import com.minisoftwareandgames.ryan.sevenhabits.Fragments.NavigationDrawerFragment;
 import com.minisoftwareandgames.ryan.sevenhabits.Fragments.QuadrantChartFragment;
 import com.minisoftwareandgames.ryan.sevenhabits.Fragments.QuadrantFragment;
 import com.minisoftwareandgames.ryan.sevenhabits.Fragments.WelcomeFragment;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
 
     private ProgressDialog pDialog;
-    public static final int progress_bar_type = 0;
-
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
-    private Spinner viewChanger;
+    private boolean doNotSwitch = true;
 
     public static final String QUADRANTCHARTTAG = "quadrantcharttag";
+    public static final int progress_bar_type = 0;
     public static final String QUADRANTTAG = "quadranttag";
     public static final String NEWCHARTINFOTAG = "newchartinfotag";
     public static final String NEWTASKTAG = "newtasktag";
@@ -42,6 +47,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     public void updateTitle(String title) {
         mNavigationDrawerFragment.getActionBar().setTitle(title);
     }
+    public void doNotSwitch(boolean value) {
+        this.doNotSwitch = value;
+    }
+    public boolean doNotSwitch() {return this.doNotSwitch;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,11 +112,13 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             } else {
                 quadrantChartFragment = (QuadrantChartFragment) fragmentManager
                         .findFragmentByTag(QUADRANTCHARTTAG);
-                quadrantChartFragment.setTitle(
-                        Utilities.getElement(
-                                sharedPreferences,
-                                position,
-                                Utilities.TITLES));
+                String title = Utilities.getElement(
+                        sharedPreferences,
+                        position,
+                        Utilities.TITLES);
+                Log.d("actions-title", title);
+                quadrantChartFragment.setTitle(title);
+                quadrantChartFragment.updatemAdapterForNewList(title);
             }
             fragmentManager.beginTransaction()
                 .replace(R.id.container, quadrantChartFragment, QUADRANTCHARTTAG)
@@ -135,16 +146,19 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.menu_main, menu);
-
-            SharedPreferences sharedPreferences = getSharedPreferences(
-                    Utilities.SEVENHABITS, Context.MODE_PRIVATE);
-            boolean displayChart = sharedPreferences.getBoolean(DISPLAYCHART, true);
             MenuItem switcher = menu.findItem(R.id.action_switch_view);
 
+            // configure action text based on current value (gets reset with open/close NavBar)
+            // gets configured here, selecting a title, and when it is selected
+            // in QuadrantChartFragment.java
+            SharedPreferences sharedPreferences = getSharedPreferences(
+                    Utilities.SEVENHABITS, Context.MODE_PRIVATE);
+            boolean displayChart = sharedPreferences.getBoolean(DISPLAYCHART, false);
             if (displayChart) {
                 switcher.setTitle(getResources().getString(R.string.chart_list_view));
-            } else switcher.setTitle(getResources().getString(R.string.chart_view));
-//            restoreActionBar();
+            } else {
+                switcher.setTitle(getResources().getString(R.string.chart_view));
+            }
             return true;
         }
         return super.onCreateOptionsMenu(menu);
@@ -155,10 +169,69 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        // TODO: Clean this up and make sense of it. This looks gross.
         int id = item.getItemId();
+        if (id == R.id.action_switch_view) {
+            final QuadrantChartFragment quadrantChartFragment = (QuadrantChartFragment)
+                    getSupportFragmentManager().findFragmentByTag(QUADRANTCHARTTAG);
+            if (quadrantChartFragment != null) {
+                Log.d("actions", "quadrantChartFragment != null");
+                SharedPreferences sharedPreferences = getSharedPreferences(
+                        Utilities.SEVENHABITS, Context.MODE_PRIVATE);
+                String action = item.getTitle().toString();
+                String[] options = {getResources().getString(R.string.chart_view),
+                        getResources().getString(R.string.chart_list_view)};
+
+                LinearLayout chartView = quadrantChartFragment.getChartView();
+                ListView chartListView = quadrantChartFragment.getChartListView();
+                ChartListAdapter adapter = quadrantChartFragment.getmAdapter();
+
+                if (action.equals(options[0])) {
+                    Log.d("actions", "show LinearLayout");
+                    // show LinearLayout
+                    item.setTitle(options[1]);
+                    chartView.setVisibility(View.VISIBLE);
+                    sharedPreferences.edit().putBoolean(MainActivity.DISPLAYCHART, true).apply();
+                } else {
+                    Log.d("actions", "Hide LinearLayout");
+                    // hide LinearLayout
+                    item.setTitle(options[0]);
+                    chartView.setVisibility(View.GONE);
+                    if (chartListView != null) {
+                        Log.d("actions", "charListView != null");
+                        SQLiteHelper helper = new SQLiteHelper(this);
+                        final ArrayList<QuadrantDetail> elements = helper.getDetails(
+                                quadrantChartFragment.getTitle(), Utilities.QUADRANT.ALL);
+                        if (adapter == null) {
+                            Log.d("actions", "adapter == null");
+                            adapter = new ChartListAdapter(
+                                    this.getApplicationContext(),
+                                    elements);
+                            chartListView.setAdapter(adapter);
+                        } else {
+                            Log.d("actions", "adapter != null");
+                            quadrantChartFragment.updatemAdapterForNewList(quadrantChartFragment.getTitle());
+                        }
+                        chartListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                ModifyQuadrantListViewItemDialog dialog =
+                                        ModifyQuadrantListViewItemDialog.newInstance(
+                                                quadrantChartFragment,
+                                                elements,
+                                                position);
+                                dialog.show(getSupportFragmentManager(), MainActivity.MODIFYQUADRANTTAG);
+                            }
+                        });
+                    }
+                    sharedPreferences.edit().putBoolean(MainActivity.DISPLAYCHART, false).apply();
+                }
+            }
+            return true;
+        }
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.home) {
+        else if (id == R.id.home) {
             /* had to put this in so that the home button would work again.
              * It stopped after I added onBackPressed() settings. */
             this.onPause();

@@ -74,12 +74,40 @@ public class ChartListAdapter extends BaseAdapter {
         }
     }
 
-}
+    class CompleteListViewHolder {
+        public TextView mTVItem;
+        public CompleteListViewHolder(View base) {
+            mTVItem = (TextView) base.findViewById(R.id.list_view_item);
+        }
+    }
 
-class CompleteListViewHolder {
-    public TextView mTVItem;
-    public CompleteListViewHolder(View base) {
-        mTVItem = (TextView) base.findViewById(R.id.list_view_item);
+    public void clear() {
+        elements = new ArrayList<>();
+        notifyDataSetChanged();
+    }
+
+    public void addAll(ArrayList<QuadrantDetail> elements) {
+        this.elements.addAll(elements);
+        order(elements.get(0));
+        notifyDataSetChanged();
+    }
+
+    public void add(QuadrantDetail element) {
+        this.elements.add(element);
+        order(element);
+        notifyDataSetChanged();
+    }
+
+    public void order(QuadrantDetail element) {
+        SQLiteHelper helper = new SQLiteHelper(context);
+        if (element != null)
+            this.elements = helper.getDetails(element.getTitle(), Utilities.QUADRANT.ALL);
+        else this.elements = new ArrayList<>();
+    }
+
+    public void newList(ArrayList<QuadrantDetail> elements) {
+        this.elements = elements;
+        notifyDataSetChanged();
     }
 
 }

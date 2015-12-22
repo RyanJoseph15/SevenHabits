@@ -187,6 +187,7 @@ public class NavigationDrawerFragment extends Fragment {
                 if (!isAdded()) {
                     return;
                 }
+                ((MainActivity) getActivity()).doNotSwitch(true);
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
                 QuadrantChartFragment quadrantChartFragment = (QuadrantChartFragment) getActivity()
                         .getSupportFragmentManager()
@@ -196,9 +197,6 @@ public class NavigationDrawerFragment extends Fragment {
                     Log.d("CHECK", "QuadrantChartFragment title: " + quadrantChartFragment.getTitle());
                     ((MainActivity) getActivity()).updateTitle(quadrantChartFragment.getTitle());
                 }
-                // configure action text based on current value (gets reset with open/close NavBar)
-                // gets configured here, and when it is selected in QuadrantChartFragment.java
-
             }
 
             @Override
@@ -216,6 +214,7 @@ public class NavigationDrawerFragment extends Fragment {
                             .getDefaultSharedPreferences(getActivity());
                     sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
                 }
+                ((MainActivity) getActivity()).doNotSwitch(true);
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
         };
