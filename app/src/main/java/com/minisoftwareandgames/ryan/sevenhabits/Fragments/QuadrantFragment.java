@@ -1,5 +1,6 @@
 package com.minisoftwareandgames.ryan.sevenhabits.Fragments;
 
+import android.content.ClipData;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -29,12 +30,12 @@ import java.util.ArrayList;
  */
 public class QuadrantFragment extends Fragment {
 
-    private int quadrant = 0;                                           // values 1 - 4
-    private String details = null;
-    private ListView listView;
-    private ArrayAdapter<String> mAdapter;
-    private String parentTitle = null;
-    private String tag = null;
+    protected int quadrant = 0;                                           // values 1 - 4
+    protected String details = null;
+    protected ListView listView;
+    protected ArrayAdapter<String> mAdapter;
+    protected String parentTitle = null;
+    protected String tag = null;
 
     public static QuadrantFragment newInstance(int quadrant, String parentTitle) {
         QuadrantFragment clFragment = new QuadrantFragment();
@@ -57,7 +58,7 @@ public class QuadrantFragment extends Fragment {
 
     public String getmTag() {return this.tag;}
 
-    private void setMyBackgroundColor(ListView view, int quadrant) {
+    protected void setMyBackgroundColor(ListView view, int quadrant) {
         int color = -1;
         switch (quadrant) {
             case 1:
@@ -96,6 +97,12 @@ public class QuadrantFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ModifyQuadrantDialog modifyQuadrantDialog = ModifyQuadrantDialog.newInstance(QuadrantFragment.this, position);
                 modifyQuadrantDialog.show(getFragmentManager(), MainActivity.MODIFYQUADRANTTAG);
+            }
+        });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                return false;
             }
         });
         tag = Utilities.TASKS + "_" + parentTitle + "_" + quadrant;
@@ -207,17 +214,18 @@ public class QuadrantFragment extends Fragment {
         }
     }
 
-    public void ModifyQuadrantDialogEditCallback(int position, String newDetails, int quad) {
+    public void ModifyQuadrantDialogEditCallback(int position, String newTitle, String newDetails, int quad) {
         // TODO: not getting updated in the view
         SQLiteHelper helper = new SQLiteHelper(getActivity());
         ArrayList<QuadrantDetail> details = helper.getDetails(parentTitle, Utilities.q2Q(quadrant));
         QuadrantDetail quadrantDetail = details.get(position);
         String oldDetails = quadrantDetail.getDetails();
-        helper.updateEntry(parentTitle, quadrant, oldDetails, parentTitle, quad, newDetails);
+        helper.updateEntry(quadrantDetail.getTitle(), quadrant, oldDetails, newTitle, quad, newDetails);
         if (mAdapter.getCount() > 0) mAdapter.clear();
         details.remove(position);                                           // for updating view
-        if (quad == quadrant) details.add(QuadrantDetail.newInstance(
-                quadrantDetail.getTitle(), quadrant, newDetails));
+        if (quad == quadrant && parentTitle != null && newTitle != null && parentTitle.equals(newTitle) || "Summary".equals(parentTitle)) {
+            details.add(QuadrantDetail.newInstance(quadrantDetail.getTitle(), quadrant, newDetails));
+        }
         mAdapter.addAll(Utilities.QuadrantDetails2StringsArray(details));
         mAdapter.notifyDataSetChanged();
         // notify data set changed for GONE list view
