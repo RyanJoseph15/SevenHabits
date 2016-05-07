@@ -108,14 +108,22 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     }
 
     public ArrayList<QuadrantDetail> getDetails(String detailTitle, Utilities.QUADRANT quad) {
+        // TODO: needs more work to filter for summary pages. Gets weird with detailTitle coming in
+        boolean summary = detailTitle.equals("Summary");
         SQLiteDatabase database = getReadableDatabase();
         String [] allColumns = {COLUMN_TITLE, COLUMN_QUAD, COLUMN_DETAILS};
         ArrayList<QuadrantDetail> details = new ArrayList<QuadrantDetail>();
         // set up query for different quadrants
-        String query = "SELECT * FROM " + TABLE_QDetails +
-                " WHERE " + COLUMN_TITLE + " = '" + detailTitle;
+        String query = "SELECT * FROM " + TABLE_QDetails;
+        if (!summary) {
+            query += " WHERE " + COLUMN_TITLE + " = '" + detailTitle;
+        }
         if (quad != Utilities.QUADRANT.ALL) {
-            query += "' AND " + COLUMN_QUAD + " = '";
+            if (!summary) {
+                query += "' AND " + COLUMN_QUAD + " = '";
+            } else {
+                query += " WHERE " + COLUMN_QUAD + " = '";
+            }
             switch (quad) {
                 case ONE:
                     query += 1 + "'";
@@ -130,7 +138,12 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                     query += 4 + "'";
                     break;
             }
-        } else query += "' ORDER BY " + COLUMN_QUAD + " ASC";
+        } else {
+            if (!summary) {
+                query += "' ";  // to close around detailTitle in WHERE clause above
+            }
+            query += " ORDER BY " + COLUMN_QUAD + " ASC";
+        }
         Log.d("query", query);
         Cursor cursor = database.rawQuery(query, null);
         if (cursor.getCount() > 0) {

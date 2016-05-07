@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Spinner;
 
 import com.minisoftwareandgames.ryan.sevenhabits.Dialogs.ModifyQuadrantListViewItemDialog;
 import com.minisoftwareandgames.ryan.sevenhabits.Fragments.NavigationDrawerFragment;
@@ -61,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         // set up the drawer.
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
         SharedPreferences sharedPreferences = getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE);
+        mNavigationDrawerFragment.NewChartInfoDialogCallback("Summary");
         int selected = sharedPreferences.getInt("mCurrentSelectedPosition", -1);
         this.onNavigationDrawerItemSelected(selected);
     }

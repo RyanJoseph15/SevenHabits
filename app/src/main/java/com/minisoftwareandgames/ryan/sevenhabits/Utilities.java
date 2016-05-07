@@ -34,7 +34,7 @@ public class Utilities extends Application {
     public static boolean addElements(SharedPreferences sharedPreferences, ArrayList<String> elements, String tag) {
         if (elements != null) {
             for (String element : elements) {
-                addElement(sharedPreferences, element, tag);
+                addElement(sharedPreferences, element, tag, false);
             }
             return true;
         } else {
@@ -50,13 +50,17 @@ public class Utilities extends Application {
         }
     }
 
-    public static boolean addElement(SharedPreferences sharedPreferences, String element, String tag) {
+    public static boolean addElement(SharedPreferences sharedPreferences, String element, String tag, boolean first) {
         // convert to arraylist
         ArrayList<String> elements = getElements(sharedPreferences, tag);
         if (elements == null) {
             elements = new ArrayList<String>();
         }
-        elements.add(element);
+        if (first) {
+            elements.add(0, element);
+        } else {
+            elements.add(element);
+        }
         // convert to json
         String jsonObjectString = Strings2JSON(elements, tag);
         Log.d("CHECK", jsonObjectString);
@@ -73,12 +77,17 @@ public class Utilities extends Application {
         if (JSONTitles != null)
             Log.d("CHECK", "JSONTitles: " + JSONTitles);
         else Log.d("CHECK", "JSONTitles is null");
-        return JSONTitles != null? String2Array(JSONTitles, tag) : null;
+        return JSONTitles != null? String2Array(JSONTitles, tag) : new ArrayList<String>();
     }
 
 
     public static String getElement(SharedPreferences sharedPreferences, int position, String tag) {
-        return getElements(sharedPreferences, tag).get(position);
+        ArrayList<String> elements = getElements(sharedPreferences, tag);
+        if (elements != null) {
+            return elements.get(position);
+        } else {
+            return null;
+        }
     }
 
     /* ------------------------------------------------------------------------------------ /
@@ -132,7 +141,7 @@ public class Utilities extends Application {
         else if (quad == 2) return QUADRANT.TWO;
         else if (quad == 3) return QUADRANT.THREE;
         else if (quad == 4) return QUADRANT.FOUR;
-        else return QUADRANT.ALL;
+        else return QUADRANT.ALL;   // list view
     }
 
     public static String quad2Title(int quad) {
