@@ -2,13 +2,19 @@ package com.minisoftwareandgames.ryan.sevenhabits.Dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 
 import com.minisoftwareandgames.ryan.sevenhabits.Fragments.QuadrantChartFragment;
 import com.minisoftwareandgames.ryan.sevenhabits.QuadrantDetail;
@@ -22,6 +28,8 @@ import java.util.ArrayList;
  * Created by ryan on 12/22/15.
  */
 public class ModifyQuadrantListViewItemDialog extends DialogFragment {
+
+    /* from LIST VIEW */
 
     private QuadrantChartFragment fragment;
     private int position;
@@ -56,6 +64,12 @@ public class ModifyQuadrantListViewItemDialog extends DialogFragment {
         final QuadrantDetail quadrantDetail = elements.get(position);
         mTitle.setText(quadrantDetail.getDetails());
         final Spinner changeQuadrant = (Spinner) view.findViewById(R.id.change_quadrant);
+
+        final Spinner changeTitle = (Spinner) view.findViewById(R.id.change_title);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE);
+        ArrayList<String> titles = Utilities.getElements(sharedPreferences, Utilities.TITLES);
+        changeTitle.setAdapter(new ArrayAdapter<>(getActivity().getApplicationContext(), R.layout.list_view_item, titles));
+        changeTitle.setSelection(titles.indexOf(elements.get(0) != null? elements.get(0).getTitle() : ""));
         changeQuadrant.setSelection(quadrantDetail.getQuadrant() - 1);    // array is 0 base but quadrants start at 1
         builder.setView(view)
                 .setNeutralButton("delete",
@@ -75,6 +89,7 @@ public class ModifyQuadrantListViewItemDialog extends DialogFragment {
                                 fragment.ModifyQuadrantDialogEditCallback(
                                         quadrantDetail.getQuadrant(),
                                         position,
+                                        changeTitle.getSelectedItem().toString(),
                                         mTitle.getText().toString().trim(),
                                         changeQuadrant.getSelectedItemPosition() + 1);
                                 getDialog().dismiss();
