@@ -118,9 +118,15 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
-                ModifyTitleDialog modifyTitleDialog = ModifyTitleDialog.newInstance(NavigationDrawerFragment.this, position);
-                modifyTitleDialog.show(getFragmentManager(), MainActivity.MODIFYTITLETAG);
-                return true;
+                // Summary is always first (0)
+                // TODO: find better solution
+                if (position > 0) {
+                    ModifyTitleDialog modifyTitleDialog = ModifyTitleDialog.newInstance(NavigationDrawerFragment.this, position);
+                    modifyTitleDialog.show(getFragmentManager(), MainActivity.MODIFYTITLETAG);
+                    return true;
+                } else {
+                    return false;
+                }
             }
         });
         ArrayList<String> titles = Utilities.getElements(getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE), Utilities.TITLES);
@@ -128,6 +134,8 @@ public class NavigationDrawerFragment extends Fragment {
         if (titles == null) {
 //            Log.d("CHECK", "titles is null");
             titles = new ArrayList<String>();
+        } else if (titles.size() > 1) {
+
         }
         mAdapter = new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
@@ -339,15 +347,21 @@ public class NavigationDrawerFragment extends Fragment {
 //        Log.d("CHECK", "callback");
         // add to the list of titles
         SQLiteHelper helper = new SQLiteHelper(getActivity());
-        if (helper.uniqueTitle(title)) {
-            Utilities.addElement(getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE), title, Utilities.TITLES);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(
+                Utilities.SEVENHABITS, Context.MODE_PRIVATE);
+        // && clause handles Overview being entered as first chart name
+        if (!Utilities.getElements(sharedPreferences, Utilities.TITLES).contains(title)) {
+            // false for "don't add to front" - OVERVIEW FIRST
+            Utilities.addElement(sharedPreferences, title, Utilities.TITLES, false);
             // update the view
             if (mAdapter.getCount() > 0) mAdapter.clear();
-            mAdapter.addAll(Utilities.getElements(getActivity().getSharedPreferences(Utilities.SEVENHABITS, Context.MODE_PRIVATE), Utilities.TITLES));
+            mAdapter.addAll(Utilities.getElements(sharedPreferences, Utilities.TITLES));
             mAdapter.notifyDataSetChanged();
         } else {
-            String notUnique = title + " " + getString(R.string.not_unique);
-            Toast.makeText(getActivity(), notUnique, Toast.LENGTH_SHORT).show();
+            if (!title.equals("Summary")) {
+                String notUnique = title + " " + getString(R.string.not_unique);
+                Toast.makeText(getActivity(), notUnique, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
