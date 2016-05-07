@@ -33,17 +33,17 @@ import java.util.ArrayList;
  */
 public class QuadrantChartFragment extends Fragment implements View.OnClickListener {
 
-    private static final String ARG_SECTION_NUMBER = "section_number";
-    private String title;
+    protected static final String ARG_SECTION_NUMBER = "section_number";
+    protected String title;
 
-    private ListView chartListView;
-    private LinearLayout chartView;
-    private ChartListAdapter mAdapter;
+    protected ListView chartListView;
+    protected LinearLayout chartView;
+    protected ChartListAdapter mAdapter;
 
-    private Button quadrant1;
-    private Button quadrant2;
-    private Button quadrant3;
-    private Button quadrant4;
+    protected Button quadrant1;
+    protected Button quadrant2;
+    protected Button quadrant3;
+    protected Button quadrant4;
 
     public static QuadrantChartFragment newInstance(int sectionNumber, String title) {
         QuadrantChartFragment qcFragment = new QuadrantChartFragment();
@@ -168,16 +168,16 @@ public class QuadrantChartFragment extends Fragment implements View.OnClickListe
 //        mAdapter.notifyDataSetChanged();
 //    }
 
-    public void ModifyQuadrantDialogEditCallback(int quadrant, int position, String newDetails, int quad) {
+    public void ModifyQuadrantDialogEditCallback(int quadrant, int position, String newTitle, String newDetails, int quad) {
         // TODO: see commit comments
         SQLiteHelper helper = new SQLiteHelper(getActivity());
         ArrayList<QuadrantDetail> details = helper.getDetails(getTitle(), Utilities.QUADRANT.ALL);
         QuadrantDetail quadrantDetail = details.get(position);
         String oldDetails = quadrantDetail.getDetails();
-        helper.updateEntry(getTitle(), quadrant, oldDetails, getTitle(), quad, newDetails);
+        helper.updateEntry(getTitle(), quadrant, oldDetails, newTitle, quad, newDetails);
         if (mAdapter.getCount() > 0) mAdapter.clear();
         details.remove(position);                                           // for updating view
-        if (quad == quadrant) details.add(QuadrantDetail.newInstance(
+        if (quad == quadrant || "Summary".equals(newTitle)) details.add(QuadrantDetail.newInstance(
                 quadrantDetail.getTitle(), quadrant, newDetails));
         mAdapter.addAll(details);
         mAdapter.notifyDataSetChanged();
